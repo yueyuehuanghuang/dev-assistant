@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>知识库 · Dev Assistant</title><link rel="stylesheet" href="/static/style.css">
+  <script type="module" src="/static/knowledge.mjs"></script>
+</head>
+<body class="knowledge-page">
+  <aside class="sidebar">
+    <a class="brand" href="/">dev assistant<small>← 返回项目对话</small></a>
+    <div class="nav-label">知识库</div><div id="kb-list"></div>
+    <form id="kb-create"><label for="kb-name">新建知识库</label><input id="kb-name" maxlength="80" required placeholder="例如：项目设计文档"><button>创建</button></form>
+    <div class="sidebar-bottom">资料保存在本地 SQLite。默认本机 Qwen 向量化；如改为远程 Embedding 服务，片段会发送到该服务。</div>
+  </aside>
+  <main>
+    <header><a href="/">← 返回聊天</a><strong>项目知识库</strong><span id="embedding-status">检查 Embedding 配置中…</span></header>
+    <div class="knowledge-content">
+      <div id="kb-message" role="status" aria-live="polite">先选择或创建一个知识库。</div>
+      <section id="kb-workspace" hidden>
+        <div class="kb-heading"><div><h1 id="kb-title"></h1><p id="kb-index-status"></p></div><div><button id="use-kb">用于新对话 ↗</button><button id="reindex">构建 / 更新向量索引</button></div></div>
+        <section class="kb-card"><h2>上传文档</h2><p>支持 UTF-8 的 TXT、Markdown、LOG、JSON、CSV，每个文件最多 1 MB。上传后点击“构建 / 更新向量索引”。相同内容自动去重。</p>
+          <form id="kb-upload"><label class="sr-only" for="kb-file">选择文档</label><input id="kb-file" type="file" accept=".txt,.md,.markdown,.log,.json,.csv" required><button>上传并切片</button></form>
+          <div id="kb-documents"></div>
+        </section>
+        <section class="kb-card"><h2>检索测试</h2><p>先检查召回的片段，再让聊天助手基于资料回答。相似度和检索分数不等于答案置信度。</p>
+          <form id="kb-search"><label class="sr-only" for="kb-query">检索问题</label><input id="kb-query" required maxlength="1000" placeholder="例如：登录令牌有效期是多久？">
+            <label class="sr-only" for="kb-mode">检索方式</label><select id="kb-mode"><option value="hybrid">混合检索</option><option value="vector">仅向量</option><option value="bm25">仅关键词</option></select><button>检索</button></form>
+          <div id="kb-results"></div>
+        </section>
+      </section>
+    </div>
+  </main>
+</body></html>

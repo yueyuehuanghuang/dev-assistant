@@ -1,0 +1,5 @@
+# Optional, only for running local_embedding_server.py. Main backend does not need PyTorch.
+sentence-transformers>=5.0,<7
+fastapi>=0.115,<1
+uvicorn>=0.30,<1
+python-dotenv>=1,<2

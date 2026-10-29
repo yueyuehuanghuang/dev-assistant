@@ -1,0 +1,71 @@
+services:
+  assistant:
+    build: .
+    ports:
+      - "127.0.0.1:8000:8000"
+    env_file: .env
+    environment:
+      TOOL_TRANSPORT: mcp
+      DATABASE_URL: postgresql://devassistant:${POSTGRES_PASSWORD:-devassistant_local}@postgres:5432/devassistant
+      VECTOR_BACKEND: milvus
+      MILVUS_URI: http://milvus:19530
+      AGENT_MODE: multi
+      EMBEDDING_BASE_URL: ${DOCKER_EMBEDDING_BASE_URL:-http://host.docker.internal:8011/v1}
+    command: ["sh", "-c", "python scripts/migrate.py upgrade && uvicorn main:app --host 0.0.0.0 --port 8000 --workers 1"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      milvus:
+        condition: service_healthy
+    volumes:
+      - conversations:/app/.data
+    restart: unless-stopped
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: devassistant
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-devassistant_local}
+      POSTGRES_DB: devassistant
+    ports: ["127.0.0.1:54329:5432"]
+    volumes: ["postgres:/var/lib/postgresql/data"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U devassistant -d devassistant"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+  etcd:
+    image: quay.io/coreos/etcd:v3.5.18
+    environment:
+      ETCD_AUTO_COMPACTION_MODE: revision
+      ETCD_AUTO_COMPACTION_RETENTION: "1000"
+      ETCD_QUOTA_BACKEND_BYTES: "4294967296"
+    command: ["etcd", "--advertise-client-urls=http://etcd:2379", "--listen-client-urls=http://0.0.0.0:2379", "--data-dir=/etcd"]
+    volumes: ["etcd:/etcd"]
+  minio:
+    image: milvusdb/minio:RELEASE.2024-12-18T13-15-44Z
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: ["minio", "server", "/data"]
+    volumes: ["minio:/data"]
+  milvus:
+    image: milvusdb/milvus:v2.5.4
+    command: ["milvus", "run", "standalone"]
+    environment:
+      ETCD_ENDPOINTS: etcd:2379
+      MINIO_ADDRESS: minio:9000
+    ports: ["127.0.0.1:19539:19530"]
+    volumes: ["milvus:/var/lib/milvus"]
+    depends_on: [etcd, minio]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 30s
+volumes:
+  conversations:
+  postgres:
+  etcd:
+  minio:
+  milvus:

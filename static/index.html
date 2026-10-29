@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dev Assistant · 开发工作台</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script type="module" src="/static/app.mjs"></script>
+</head>
+<body>
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="Dev Assistant 首页"><span class="brand-icon">d<span>↗</span></span><span>dev assistant<small>你的项目阅读伙伴</small></span></a>
+    <button id="new-chat" class="new-chat">＋ 新建对话 <span>↗</span></button>
+    <div class="nav-label">工作空间</div>
+    <div class="nav-active"><span>◌</span> 项目对话 <span class="badge">LIVE</span></div>
+    <a class="knowledge-nav" href="/knowledge">知识库 · 上传与检索 ↗</a>
+    <a class="knowledge-nav" id="memory-link" href="/memory">记忆 · 确认与历史 ↗</a>
+    <section class="session"><div class="nav-label">当前会话</div><p id="session-id">尚未开始</p><p class="muted">完成的对话会自动保存。刷新页面后，可以接着聊。</p></section>
+    <section class="history-panel" aria-label="历史会话">
+      <div class="nav-label">历史会话</div>
+      <div id="sessions-list"></div><small id="sessions-status" role="status"></small>
+      <button id="more-sessions" hidden>加载更多</button>
+    </section>
+    <div class="sidebar-bottom"><span class="online-dot"></span> GitHub 只读访问<a href="/docs" target="_blank" rel="noopener">接口文档 ↗</a></div>
+  </aside>
+  <main>
+    <header><div><span class="breadcrumb">工作空间 / </span>项目对话</div><span class="header-label">代码，从理解开始。</span><button id="history-mobile" class="mobile-new" aria-expanded="false">历史</button><button id="new-chat-mobile" class="mobile-new">＋ 新对话</button></header>
+    <div id="conversation" class="conversation">
+      <section id="welcome" class="welcome">
+        <div class="eyebrow"><span class="online-dot"></span> DEV ASSISTANT</div>
+        <h1>从一个问题，<br>读懂一个项目<span>。</span></h1>
+        <p>一起梳理代码思路，探索 GitHub 仓库。<br>工具执行过程清晰可见，对话可以持续进行。</p>
+        <div class="suggestions">
+          <button data-prompt="请读取 fastapi/fastapi，介绍项目用途和根目录结构，并附上来源链接。"><span>01 / 探索仓库</span><strong>FastAPI 是如何组织的？ ↗</strong><small>读取仓库信息、根目录和 README</small></button>
+          <button data-prompt="用简单的例子解释 Python 的 async 和 await。"><span>02 / 理解概念</span><strong>理解 async / await ↗</strong><small>从一个小例子开始</small></button>
+        </div>
+      </section>
+      <div id="messages" aria-label="聊天消息"></div>
+    </div>
+    <div class="composer-wrap">
+      <div class="knowledge-picker"><label for="knowledge-select">对话知识库</label><select id="knowledge-select"><option value="">不使用知识库</option></select><a href="/knowledge">管理</a><small id="knowledge-hint">切换知识库请新建对话</small></div>
+      <div class="knowledge-picker"><label for="memory-project">记忆项目</label><input id="memory-project" maxlength="80" placeholder="可选，例如 dev-assistant"><small id="memory-status">同项目与知识库共享已确认记忆；留空且不选知识库时仅限本会话。</small></div>
+      <div id="status" class="status" role="status" aria-live="polite">准备好了，开始你的第一个问题。</div>
+      <form id="chat-form" class="composer">
+        <label class="sr-only" for="message">输入问题</label>
+        <textarea id="message" maxlength="12000" rows="2" placeholder="问一个开发问题，或输入 GitHub 仓库名，如 fastapi/fastapi…" required></textarea>
+        <div class="composer-bottom"><span>Enter 发送 · Shift + Enter 换行</span><div><button id="stop" type="button" hidden>停止</button><button id="send" type="submit">发送 ↑</button></div></div>
+      </form>
+      <p class="footnote">支持只读查询仓库、源码、Issue 和 PR 变更。模型回答请结合来源核实。</p>
+    </div>
+  </main>
+</body>
+</html>
