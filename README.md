@@ -1,6 +1,6 @@
 # Dev Assistant
 
-从零实现一个面向 GitHub 仓库的 AI 开发助手，参考 DevFlow-AI 的业务方向，逐步学习实现。
+从零实现一个面向 GitHub 仓库的 AI 开发助手。
 
 ## 当前版本与快速开始
 
