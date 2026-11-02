@@ -20,10 +20,7 @@ class ChatRequest(BaseModel):
     @field_validator("message")
     @classmethod
     def validate_message(cls, value: str) -> str:
-        message = value.strip()
-        if not message:
-            raise ValueError("消息不能只包含空白字符")
-        return message
+        return value
 
 
 class ChatResponse(BaseModel):
